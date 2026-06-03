@@ -1,0 +1,64 @@
+//
+//  WeeklyStepsView.swift
+//  WiseWalker
+//
+//  Created by Afzalbek Pulatov on 05/12/26.
+//
+
+import SwiftUI
+import Charts
+
+struct WeeklyStepsView: View {
+    private let week: [DayStep]
+    @State private var animationState = false
+    
+    init(week: [DayStep]) {
+        self.week = week
+    }
+    
+    var body: some View {
+        VStack {
+            Chart(week, id: \.name) {
+                BarMark(
+                    x: .value("Week", $0.name),
+                    y: .value("Steps", $0.steps),
+                    stacking: .standard
+                )
+                .foregroundStyle(.indigo)
+            }
+            .chartYAxis {
+                AxisMarks {
+                    AxisValueLabel()
+                }
+            }
+            .chartXAxis {
+                AxisMarks {
+                    AxisValueLabel()
+                }
+            }
+            .frame(height: 200)
+            Text("This week")
+                .font(.subheadline)
+        }
+        .padding(.horizontal, 16)
+        .offset(y: animationState ? 0 : 400)
+        .animation(.bouncy, value: animationState)
+        .onAppear {
+            DispatchQueue.main.asyncAfter(wallDeadline: .now() + 0.01) {
+                animationState = true
+            }
+        }
+    }
+}
+
+#Preview {
+    WeeklyStepsView(week: [
+        DayStep(name: "M", steps: 1341),
+        DayStep(name: "T", steps: 4507),
+        DayStep(name: "W", steps: 6482),
+        DayStep(name: "Th", steps: 3345),
+        DayStep(name: "F", steps: 7560),
+        DayStep(name: "Sa", steps: 12401),
+        DayStep(name: "Su", steps: 567)
+    ])
+}
